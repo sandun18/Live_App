@@ -2,6 +2,7 @@ package com.livewave.authservice.service;
 
 import com.livewave.authservice.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -58,6 +59,29 @@ public class JwtService {
 
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
+    }
+
+    public boolean isTokenValid(String token) {
+        if (token == null || token.isBlank()) {
+            return false;
+        }
+        try {
+            Claims claims = extractAllClaims(token);
+            return claims.getSubject() != null
+                    && !claims.getSubject().isBlank()
+                    && claims.getExpiration() != null
+                    && !claims.getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public boolean isTokenValid(String token, String username) {
+        try {
+            return isTokenValid(token) && extractUsername(token).equals(username);
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public long getExpirationInSeconds() {
