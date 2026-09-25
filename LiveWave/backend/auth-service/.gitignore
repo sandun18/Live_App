@@ -1,7 +1,20 @@
+# Build and target
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# IDEs and Editors
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
 
 ### STS ###
 .apt_generated
@@ -12,18 +25,9 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbproject/load-impl.xml
 /nbproject/copylib-libraries.xml
-
-### VS Code ###
-.vscode/

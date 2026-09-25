@@ -26,8 +26,8 @@ public class JwtService {
 
     @PostConstruct
     public void init() {
-        if (jwtSecret == null || jwtSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
-            throw new IllegalStateException("JWT secret must be configured and be at least 256 bits (32 bytes) long.");
+        if (jwtSecret == null || jwtSecret.isBlank() || jwtSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT secret must be configured via JWT_SECRET and be at least 256 bits (32 bytes) long.");
         }
         this.signingKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
