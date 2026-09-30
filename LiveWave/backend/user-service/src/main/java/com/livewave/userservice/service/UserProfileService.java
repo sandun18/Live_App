@@ -91,6 +91,34 @@ public class UserProfileService {
         return mapToResponse(updatedProfile);
     }
 
+    @Transactional
+    public UserProfileResponse updateProfileByUsername(String username, UpdateProfileRequest request) {
+        UserProfile profile = userProfileRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User profile with username '" + username + "' not found"));
+
+        if (request.getDisplayName() != null) {
+            if (request.getDisplayName().isBlank()) {
+                throw new IllegalArgumentException("displayName cannot be empty or blank");
+            }
+            profile.setDisplayName(request.getDisplayName().trim());
+        }
+
+        if (request.getBio() != null) {
+            profile.setBio(request.getBio().trim());
+        }
+
+        if (request.getAvatarUrl() != null) {
+            profile.setAvatarUrl(request.getAvatarUrl().trim());
+        }
+
+        if (request.getCountry() != null) {
+            profile.setCountry(request.getCountry().trim());
+        }
+
+        UserProfile updatedProfile = userProfileRepository.save(profile);
+        return mapToResponse(updatedProfile);
+    }
+
     private UserProfileResponse mapToResponse(UserProfile profile) {
         return UserProfileResponse.builder()
                 .id(profile.getId())

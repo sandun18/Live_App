@@ -7,6 +7,8 @@ import com.livewave.userservice.service.UserProfileService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +25,23 @@ public class UserProfileController {
     public ResponseEntity<UserProfileResponse> createProfile(@Valid @RequestBody CreateProfileRequest request) {
         UserProfileResponse response = userProfileService.createProfile(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileResponse> getCurrentUserProfile(Authentication authentication) {
+        String username = authentication.getName();
+        UserProfileResponse response = userProfileService.getProfileByUsername(username);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserProfileResponse> updateCurrentUserProfile(
+            Authentication authentication,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+        String username = authentication.getName();
+        UserProfileResponse response = userProfileService.updateProfileByUsername(username, request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
@@ -43,6 +62,7 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserProfileResponse> updateProfile(
             @PathVariable Long id,
